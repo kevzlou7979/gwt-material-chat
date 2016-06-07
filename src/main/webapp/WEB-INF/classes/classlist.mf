@@ -1,0 +1,7 @@
+gwt.material.design.chat.client.shared.User
+gwt.material.design.chat.client.local.ChatClient
+gwt.material.design.chat.server.SessionKeeper
+gwt.material.design.chat.server.ChatService
+gwt.material.design.chat.client.avatar.MaterialAvatar
+gwt.material.design.chat.client.shared.MyMessage
+gwt.material.design.chat.server.HelloWorldService
