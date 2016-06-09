@@ -2,15 +2,24 @@ package gwt.material.design.chat.client.shared;
 
 import org.jboss.errai.common.client.api.annotations.Portable;
 
+import java.util.Date;
+
 @Portable
 public class MyMessage {
 	private User author;
 	private String message;
 	private String recipient;
 	private MessageType type;
+	private Date date;
 
 	public MyMessage() {
 
+	}
+
+	public MyMessage(User author, String message, String recipient) {
+		this.author = author;
+		this.message = message;
+		this.recipient = recipient;
 	}
 
 	public MessageType getType() {
@@ -46,6 +55,15 @@ public class MyMessage {
 
 	public MyMessage setAuthor(User author) {
 		this.author = author;
+		return this;
+	}
+
+	public Date getDate() {
+		return date;
+	}
+
+	public MyMessage setDate(Date date) {
+		this.date = date;
 		return this;
 	}
 

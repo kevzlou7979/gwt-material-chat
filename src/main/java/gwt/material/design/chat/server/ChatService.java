@@ -1,26 +1,24 @@
 package gwt.material.design.chat.server;
 
-import java.util.List;
-import java.util.Random;
-
-import javax.inject.Inject;
-
 import gwt.material.design.chat.client.shared.MyMessage;
 import gwt.material.design.chat.client.shared.User;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import org.jboss.errai.bus.client.api.QueueSession;
 import org.jboss.errai.bus.client.api.SubscribeListener;
 import org.jboss.errai.bus.client.api.UnsubscribeListener;
+import org.jboss.errai.bus.client.api.base.MessageBuilder;
 import org.jboss.errai.bus.client.api.messaging.Message;
 import org.jboss.errai.bus.client.api.messaging.MessageBus;
 import org.jboss.errai.bus.client.api.messaging.MessageCallback;
-import org.jboss.errai.bus.client.api.base.MessageBuilder;
 import org.jboss.errai.bus.client.framework.SubscriptionEvent;
 import org.jboss.errai.bus.server.annotations.Service;
 import org.jboss.errai.common.client.protocols.MessageParts;
 import org.jboss.errai.common.client.protocols.Resources;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import javax.inject.Inject;
+import java.util.List;
+import java.util.Random;
 
 @Service
 public class ChatService implements MessageCallback {
@@ -146,14 +144,14 @@ public class ChatService implements MessageCallback {
   }
 
   private void sendBroadcastMessage(MyMessage chatMessage) {
-    MessageBuilder.createMessage().toSubject("ChatClient").signalling()
+    MessageBuilder.createMessage().toSubject("ChatPage").signalling()
             .with("message", chatMessage).noErrorHandling().sendNowWith(msgBus);
   }
 
   private void sendPrivateMessage(MyMessage chatMessage) {
     String recipientSessionId = sessionKeeper.getSessionIdByUsername(chatMessage.getRecipient());
     chatMessage.setMessage(" to "+  chatMessage.getRecipient()  + " : " + chatMessage.getMessage());
-    MessageBuilder.createMessage().toSubject("ChatClient").signalling()
+    MessageBuilder.createMessage().toSubject("ChatPage").signalling()
             .with(MessageParts.SessionID, recipientSessionId).with("message", chatMessage)
             .noErrorHandling().sendNowWith(msgBus);
     
@@ -162,7 +160,7 @@ public class ChatService implements MessageCallback {
     */
 
     String authorSessionId = sessionKeeper.getSessionIdByUsername(chatMessage.getAuthor().getUsername());
-    MessageBuilder.createMessage().toSubject("ChatClient").signalling()
+    MessageBuilder.createMessage().toSubject("ChatPage").signalling()
             .with(MessageParts.SessionID, authorSessionId).with("message", chatMessage)
             .noErrorHandling().sendNowWith(msgBus);
     logger.info("sendPrivateMessage done");

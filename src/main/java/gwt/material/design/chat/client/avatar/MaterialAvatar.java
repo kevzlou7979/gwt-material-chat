@@ -2,6 +2,7 @@ package gwt.material.design.chat.client.avatar;
 
 import com.google.gwt.dom.client.Document;
 import gwt.material.design.client.base.MaterialWidget;
+import gwt.material.design.client.ui.MaterialToast;
 
 /**
  * Created by Mark Kevin on 6/6/2016.
@@ -22,8 +23,9 @@ public class MaterialAvatar extends MaterialWidget {
     @Override
     protected void onLoad() {
         super.onLoad();
-        getElement().setAttribute("data-jdenticon-hash", generateHashCode(getName()));
-        update();
+        if(getName() != null) {
+            initialize();
+        }
     }
 
     public String getName() {
@@ -47,6 +49,11 @@ public class MaterialAvatar extends MaterialWidget {
     private native String generateHashCode(String value) /*-{
         return $wnd.md5(value);
     }-*/;
+
+    public void initialize() {
+        getElement().setAttribute("data-jdenticon-hash", generateHashCode(getName()));
+        update();
+    }
 
     private native void update() /*-{
         $wnd.jdenticon();
