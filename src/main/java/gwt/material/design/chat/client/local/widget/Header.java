@@ -2,14 +2,11 @@ package gwt.material.design.chat.client.local.widget;
 
 import com.google.gwt.dom.client.Style;
 import com.google.gwt.user.client.ui.Composite;
-import gwt.material.design.addins.client.sideprofile.MaterialSideProfile;
-import gwt.material.design.chat.client.avatar.MaterialAvatar;
-import gwt.material.design.chat.client.local.ChatPage;
+import gwt.material.design.chat.client.local.events.LoadEvent;
 import gwt.material.design.chat.client.local.events.UserJoinEvent;
+import gwt.material.design.client.constants.HideOn;
 import gwt.material.design.client.constants.IconType;
 import gwt.material.design.client.constants.NavBarType;
-import gwt.material.design.client.constants.SideNavType;
-import gwt.material.design.client.constants.WavesType;
 import gwt.material.design.client.ui.*;
 import org.jboss.errai.ui.shared.api.annotations.DataField;
 import org.jboss.errai.ui.shared.api.annotations.Templated;
@@ -50,23 +47,28 @@ public class Header extends Composite {
         navBrand.setText("Chat App");
         navBar.add(navBrand);
         navSection.setFloat(Style.Float.RIGHT);
+        navSection.setHideOn(HideOn.NONE);
         iconUsers.setIconType(IconType.ACCOUNT_CIRCLE);
         badgeUsers.setText("0");
         badgeUsers.setBackgroundColor("pink");
         badgeUsers.setRight(16);
         badgeUsers.setCircle(true);
         iconUsers.add(badgeUsers);
+
         navSection.add(iconUsers);
         navBar.add(navSection);
-
-        iconUsers.setWaves(WavesType.DEFAULT);
-        iconUsers.addStyleName("button-collapse");
-        iconUsers.setActivates("rightSideNav");
     }
 
     public void storeListChanged(@Observes UserJoinEvent event) {
-        MaterialToast.fireToast(event.getUsers().size() + " from Header");
         badgeUsers.setText(event.getUsers().size() + "");
+    }
+
+    public void onAppLoad(@Observes LoadEvent event) {
+        if(event.isLoad()) {
+            navBar.showProgress(event.getType());
+        }else {
+            navBar.hideProgress();
+        }
     }
 
     public MaterialBadge getBadgeUsers() {

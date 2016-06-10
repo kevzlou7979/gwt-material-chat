@@ -1,7 +1,7 @@
 package gwt.material.design.chat.client.local;
 
 import com.google.gwt.event.dom.client.*;
-import com.google.gwt.i18n.client.DateTimeFormat;
+import gwt.material.design.chat.client.local.events.LoadEvent;
 import gwt.material.design.chat.client.local.events.NewMessageEvent;
 import gwt.material.design.chat.client.local.events.SetCurrentUserEvent;
 import gwt.material.design.chat.client.local.events.UserJoinEvent;
@@ -10,6 +10,7 @@ import gwt.material.design.chat.client.shared.MyMessage;
 import gwt.material.design.chat.client.shared.User;
 import gwt.material.design.client.constants.ButtonType;
 import gwt.material.design.client.constants.IconType;
+import gwt.material.design.client.constants.ProgressType;
 import gwt.material.design.client.ui.MaterialButton;
 import gwt.material.design.client.ui.MaterialNoResult;
 import gwt.material.design.client.ui.MaterialTextBox;
@@ -21,6 +22,8 @@ import org.jboss.errai.bus.client.api.messaging.MessageCallback;
 import org.jboss.errai.common.client.api.ErrorCallback;
 import org.jboss.errai.ui.nav.client.local.DefaultPage;
 import org.jboss.errai.ui.nav.client.local.Page;
+import org.jboss.errai.ui.nav.client.local.PageShowing;
+import org.jboss.errai.ui.nav.client.local.PageShown;
 import org.jboss.errai.ui.shared.api.annotations.DataField;
 import org.jboss.errai.ui.shared.api.annotations.Templated;
 
@@ -69,11 +72,24 @@ public class ChatPage {
     @Inject
     private Event<NewMessageEvent> newMessageEvent;
 
+    @Inject
+    private Event<LoadEvent> loadEvent;
+
     private Random random = new Random();
 
     private MyMessage.MessageType conversationType = MyMessage.MessageType.PUBLIC;
     private User currentUser;
     private String recipient = "";
+
+    @PageShowing
+    public void onShowing() {
+        loadEvent.fire(new LoadEvent(true, ProgressType.INDETERMINATE));
+    }
+
+    @PageShown
+    public void onShown() {
+        loadEvent.fire(new LoadEvent(false));
+    }
 
     @PostConstruct
     public void init() {
@@ -118,7 +134,6 @@ public class ChatPage {
         bus.subscribe("ActiveUserList", new MessageCallback() {
             public void callback(Message message) {
                 List<User> users = (List<User>) message.get(List.class, "users");
-                MaterialToast.fireToast(users.size() + " from Chat Page");
                 userJoinEvent.fire(new UserJoinEvent(users));
             }
         });
@@ -127,8 +142,6 @@ public class ChatPage {
             public void callback(Message message) {
                 MyMessage newMessage = message.get(MyMessage.class, "message");
                 newMessageEvent.fire(new NewMessageEvent(newMessage));
-                MaterialToast.fireToast(" " + DateTimeFormat.getFormat("yyyy-MM-dd HH:mm:ss").format(new Date()) + " "
-                        + newMessage.getAuthor().getUsername() + " id " + newMessage.getAuthor().getUniqueId() + " says : " + newMessage.getMessage());
             }
         });
     }

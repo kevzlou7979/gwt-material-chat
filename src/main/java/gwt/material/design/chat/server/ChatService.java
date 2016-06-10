@@ -17,6 +17,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.inject.Inject;
+import java.util.Date;
 import java.util.List;
 import java.util.Random;
 
@@ -70,11 +71,11 @@ public class ChatService implements MessageCallback {
               @Override
               public void run() {
                 try {
-                  Thread.sleep(300);
+                  Thread.sleep(2000);
                 } catch (InterruptedException e) {
                   e.printStackTrace();
                 }
-                sendSystemMessage("new unknown user just joins the channel");
+                sendSystemMessage("New unknown user just joins the channel");
                 updateUserListToSubscribers(sessionKeeper.getUsers());
               }
             }).start();
@@ -127,7 +128,7 @@ public class ChatService implements MessageCallback {
                 .equals(username)) || sessionKeeper.getSessionIdByUsername(username).isEmpty()) {
           User oldUser = sessionKeeper.updateUser(sess.getSessionId(), username, color);
           if (!oldname.equals(username))
-            sendSystemMessage("user has changed his name from " + oldUser.getUsername() + " to "
+            sendSystemMessage("User has changed his name from " + oldUser.getUsername() + " to "
                     + username);
           updateUserListToSubscribers(sessionKeeper.getUsers());
         } else {
@@ -167,8 +168,8 @@ public class ChatService implements MessageCallback {
   }
 
   private void sendSystemMessage(String text) {
-    sendBroadcastMessage(new MyMessage().setAuthor(new User("system", "default"))
-            .setType(MyMessage.MessageType.SYSTEM).setMessage(text));
+    sendBroadcastMessage(new MyMessage().setAuthor(new User("system", "default", "system"))
+            .setType(MyMessage.MessageType.SYSTEM).setMessage(text).setDate(new Date()));
   }
 
   private void updateUserListToSubscribers(List<User> users) {

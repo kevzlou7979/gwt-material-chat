@@ -4,8 +4,10 @@ import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.user.client.ui.Composite;
 import gwt.material.design.chat.client.avatar.MaterialAvatar;
+import gwt.material.design.chat.client.local.events.LoadEvent;
 import gwt.material.design.chat.client.local.events.SetCurrentUserEvent;
 import gwt.material.design.chat.client.shared.User;
+import gwt.material.design.client.constants.ProgressType;
 import gwt.material.design.client.ui.MaterialButton;
 import gwt.material.design.client.ui.MaterialTextBox;
 import gwt.material.design.client.ui.MaterialToast;
@@ -16,6 +18,8 @@ import org.jboss.errai.bus.client.api.messaging.MessageBus;
 import org.jboss.errai.bus.client.api.messaging.MessageCallback;
 import org.jboss.errai.common.client.api.ErrorCallback;
 import org.jboss.errai.ui.nav.client.local.Page;
+import org.jboss.errai.ui.nav.client.local.PageShowing;
+import org.jboss.errai.ui.nav.client.local.PageShown;
 import org.jboss.errai.ui.nav.client.local.TransitionTo;
 import org.jboss.errai.ui.shared.api.annotations.DataField;
 import org.jboss.errai.ui.shared.api.annotations.EventHandler;
@@ -51,10 +55,23 @@ public class SettingsPage extends Composite{
     @Inject
     Event<SetCurrentUserEvent> setCurrentUserEventEvent;
 
+    @Inject
+    Event<LoadEvent> loadEvent;
+
     private MessageBus bus = ErraiBus.get();
 
     @Inject
     TransitionTo<ChatPage> chatPageTransitionTo;
+
+    @PageShowing
+    public void onShowing() {
+        loadEvent.fire(new LoadEvent(true, ProgressType.INDETERMINATE));
+    }
+
+    @PageShown
+    public void onShown() {
+        loadEvent.fire(new LoadEvent(false));
+    }
 
     @PostConstruct
     public void init() {
@@ -78,9 +95,10 @@ public class SettingsPage extends Composite{
                         String answer = message.get(String.class, "message");
                         Boolean result = message.get(Boolean.class, "result");
                         if (result) {
-                            MaterialToast.fireToast("Sucess");
                             setCurrentUserEventEvent.fire(new SetCurrentUserEvent(new User(userName.getText(), "", userName.getText())));
                             chatPageTransitionTo.go();
+                        }else {
+                            MaterialToast.fireToast(answer);
                         }
 
                     }
@@ -96,7 +114,6 @@ public class SettingsPage extends Composite{
 
 
     public void update(@Observes SetCurrentUserEvent event) {
-        MaterialToast.fireToast("UPdate update");
         avatar.setName(event.getUser().getUniqueId());
         userName.setText(event.getUser().getUsername());
     }

@@ -2,19 +2,25 @@ package gwt.material.design.chat.client.shared;
 
 import org.jboss.errai.common.client.api.annotations.Portable;
 
+import javax.persistence.GeneratedValue;
+import javax.persistence.Id;
+import javax.persistence.OneToMany;
 import java.util.Date;
 
 @Portable
 public class MyMessage {
+
+    @Id
+    @GeneratedValue
+    private int id;
+    @OneToMany
 	private User author;
 	private String message;
 	private String recipient;
 	private MessageType type;
 	private Date date;
 
-	public MyMessage() {
-
-	}
+	public MyMessage() {}
 
 	public MyMessage(User author, String message, String recipient) {
 		this.author = author;
@@ -31,7 +37,15 @@ public class MyMessage {
 		return this;
 	}
 
-	public String getMessage() {
+    public int getId() {
+        return id;
+    }
+
+    public void setId(int id) {
+        this.id = id;
+    }
+
+    public String getMessage() {
 		return message;
 	}
 
